@@ -1,34 +1,19 @@
-"""Moduł z klasami Book i Bookshelve
+"""Moduł z klasą Bookshelve
 """
-
-from datetime import date
-
-class Book:
-    def __init__(self, email, name, title, return_at) -> None:
-        self.email = email
-        self.name = name
-        self.title = title
-        self.return_at = return_at
-
+import sqlite3
 
 class Bookshelve:
+    """klasa bibliteczki pobiera z bazydanych książki o określonych parametrach
+    """
     def __init__(self, path) -> None:
-        self.books = self.import_books_from_database(path)
+        with sqlite3.connect(path) as connection:
+            self.cursor = connection.cursor()
 
-    def import_books_from_database(self, path):
-        books = []
-        pass
-        return books
-
-    def is_return_date_expired(self, return_date):
-        """sprawdza czy podana data jest starsza niż aktualna
-
-        Args:
-            date (str): data w formacie YYYY-MM-DD
+    def take_book_to_return(self):
+        """pobiera książki, których termin oddania już minął
 
         Returns:
-            bool: True gdy data już minęła
+            list: zbiór list z danymi: email, name, book_title
         """
-        return bool(date.today() >= date.fromisoformat(return_date))
-
-
+        self.cursor.execute('SELECT email, name, book_title FROM books WHERE return_at <= current_timestamp')
+        return [book for book in self.cursor.fetchall()]

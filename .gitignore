@@ -1,3 +1,6 @@
 /.env
+/.vscode
 /baza.db
 /__pycache__
+/.pytest_cache
+/*_test.py
