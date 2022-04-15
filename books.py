@@ -9,7 +9,7 @@ class Bookshelve:
         with sqlite3.connect(path) as connection:
             self.cursor = connection.cursor()
 
-    def take_book_to_return(self):
+    def find_book_to_return(self):
         """pobiera książki, których termin oddania już minął
 
         Returns:
