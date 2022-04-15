@@ -1,4 +1,4 @@
-"""klasa Email 
+"""klasa Email
 """
 
 import smtplib
@@ -12,19 +12,29 @@ class Email:
         self.port = 587
         self.username = mail_username
         self.password = mail_password
-        self.smptObj = None
+        self.object = None
 
     def __enter__(self):
-        self.smptObj = smtplib.SMTP(self.serwer, self.port)
-        self.smptObj.ehlo()  # tu jest sprawdzanie połaczenie powinna być odpowiedź: self.smptObj.ehlo()[0] == 250
-        self.smptObj.starttls()
-        self.smptObj.login(self.username, self.password)
+        self.object = smtplib.SMTP(self.serwer, self.port)
+        self.object.ehlo()
+        self.object.starttls()
+        self.object.login(self.username, self.password)
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.smptObj.quit()
+        self.object.quit()
 
-    def _prepare_text(self, name, book_title):
+    @ staticmethod
+    def _prepare_text(name, book_title):
+        """przygotowuje treść maila
+
+        Args:
+            name (str): nazwa (imię) osoby do której wysyłamy wiadomość
+            book_title (str): tytuł książki do oddania
+
+        Returns:
+            str: tekst wiadomości
+        """
         return f'{name} przypominam Ci, że już najwyższa pora oddać mi \"{book_title}\"'
 
     def send_reminding_mail(self, email_, name, book_title):
@@ -37,6 +47,7 @@ class Email:
         text = self._prepare_text(name, book_title)
         send_to = email_
         send_from = f'Marcin K. <{self.username}>'
+        #  klasa Message umożliwia zakodowanie wiadomości w utf-8 (polskie znaki)
         msg = email.message_from_string(f'From: {send_from} \nSubject: Pamiętaj \n\n{text}')
         msg.set_charset('utf-8')
-        self.smptObj.sendmail(send_from, send_to, msg.as_string())
+        self.object.sendmail(send_from, send_to, msg.as_string())
